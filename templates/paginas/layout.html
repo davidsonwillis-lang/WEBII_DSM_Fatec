@@ -1,0 +1,201 @@
+<!-- 
+# -*- coding: utf-8 -*-
+Título: Template Base Layout com Testes Integrados
+Descrição: Estrutura HTML base contendo os blocos obrigatórios e a interface de testes das APIs.
+Data: 28/04/2026
+__author__ = "Davidson Willis de Oliveira Silva"
+__email__ = "davidson.silva2@aluno.cps.sp.gov.br"
+__turma__ = "DSM - 2º Semestre / Noturno"
+__version__ = "1.0.0"
+-->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{{ title or 'Titulo da Página' }}</title>
+    
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; color: #333; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; }
+        .card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .card h3 { margin-top: 0; color: #2980b9; }
+        label { font-weight: bold; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #27ae60; color: white; border: none; padding: 10px 15px; margin-top: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #219152; }
+        .box-resultado { margin-top: 15px; padding: 12px; background-color: #eef2f3; border-left: 5px solid #7f8c8d; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+
+    
+    {% block conteudo %}
+    <h1>Painel de Controle e Testes Integrado - Flask API</h1>
+
+    
+    <div class="card">
+        <h3>Desafio 1: Mensagem Simples (GET /message)</h3>
+        <button onclick="testarGet('/message', 'res-1')">Executar Requisição</button>
+        <div id="res-1" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+    
+    <div class="card">
+        <h3>Desafio 2: Mensagem por Status Dinâmico (GET /message/&lt;status&gt;)</h3>
+        <label>Selecione o Status HTTP:</label>
+        <select id="status-dinamico">
+            <option value="200">200 OK</option>
+            <option value="201">201 Created</option>
+            <option value="400">400 Bad Request</option>
+            <option value="401">401 Unauthorized</option>
+            <option value="404">404 Not Found</option>
+            <option value="500">500 Internal Server Error</option>
+            <option value="999">999 Status Desconhecido</option>
+        </select>
+        <button onclick="testarStatusDinamico()">Enviar Status</button>
+        <div id="res-2" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+    
+    <div class="card">
+        <h3>Desafio 3: Autenticação (POST /auth/login)</h3>
+        <form id="form-login" onsubmit="testarPost(event, '/auth/login', this, 'res-3')">
+            <label>Usuário:</label>
+            <input type="text" name="usuario" value="genivaldo" required>
+            <label>Senha:</label>
+            <input type="password" name="senha" value="jerusa" required>
+            <button type="submit">Efetuar Login</button>
+        </form>
+        <div id="res-3" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+    
+    <div class="card">
+        <h3>Desafio 4: Validação de CPF (POST /cliente/validate)</h3>
+        <form id="form-cpf" onsubmit="testarPost(event, '/cliente/validate', this, 'res-4')">
+            <label>Nome do Cliente:</label>
+            <input type="text" name="nome" placeholder="Digite o nome" required>
+            <label>CPF:</label>
+            <input type="text" name="cpf" placeholder="Ex: 111.111.111-11" required>
+            <label>Retorno esperado:</label>
+            <button type="submit">Validar Cliente</button>
+        </form>
+        <div id="res-4" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+    
+    <div class="card">
+        <h3>Desafio 5: Conversão de Temperatura (GET /convert/celsius/&lt;temp&gt;)</h3>
+        <label>Temperatura em Celsius (aceita negativos):</label>
+        <input type="number" id="temp-input" step="0.1" value="25.5">
+        <button onclick="testarConversao()">Converter para Fahrenheit</button>
+        <div id="res-5" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+
+    <div class="card">
+        <h3>Desafio 6: Filtro de Busca via Querystring (GET /search?q=...)</h3>
+        <label>Termo de Busca (q):</label>
+        <input type="text" id="search-input" placeholder="Digite algo para buscar (Deixe vazio para testar erro 400)">
+        <button onclick="testarBusca()">Disparar Busca</button>
+        <div id="res-6" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+    
+    <div class="card">
+        <h3>Desafio 7: Validação de Maioridade (POST /api/register)</h3>
+        <form id="form-maioridade" onsubmit="testarPost(event, '/api/register', this, 'res-7')">
+            <label>Nome:</label>
+            <input type="text" name="nome" placeholder="Nome do usuário" required>
+            <label>Idade:</label>
+            <input type="number" name="idade" placeholder="Ex: 17 ou 18" required>
+            <button type="submit">Registrar Usuário</button>
+        </form>
+        <div id="res-7" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+    
+    <div class="card">
+        <h3>Desafio 8: Simulador de Estoque (GET /products)</h3>
+        <button onclick="testarGet('/products', 'res-8')">Consultar Estoque JSON</button>
+        <div id="res-8" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+
+    
+    <div class="card">
+        <h3>Desafio 9: Header de Segurança Personalizado (GET /admin/dashboard)</h3>
+        <label>Valor do Cabeçalho X-Api-Key:</label>
+        <input type="text" id="header-input" value="secret123" placeholder="Digite a chave de segurança">
+        <button onclick="testarHeaderDashboard()">Acessar Painel Admin</button>
+        <div id="res-9" class="box-resultado">O resultado aparecerá aqui...</div>
+    </div>
+    {% endblock %}
+
+    
+    {% block javascript %}
+    <script>
+        
+        async function processarResposta(response, campoId) {
+            const campo = document.getElementById(campoId);
+            const statusText = `[Status HTTP ${response.status}]\n`;
+            
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                const json = await response.json();
+                campo.textContent = statusText + JSON.stringify(json, null, 4);
+            } else {
+                const texto = await response.text();
+                campo.textContent = statusText + (texto || "(Corpo da resposta vazio - Sem Conteúdo)");
+            }
+        }
+
+        function testarGet(url, campoId) {
+            fetch(url)
+                .then(response => processarResposta(response, campoId))
+                .catch(err => document.getElementById(campoId).textContent = "Erro: " + err);
+        }
+
+        function testarPost(event, url, formElement, campoId) {
+            event.preventDefault(); // Impede o recarregamento de tela
+            const formData = new FormData(formElement);
+
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => processarResposta(response, campoId))
+            .catch(err => document.getElementById(campoId).textContent = "Erro: " + err);
+        }
+
+        function testarStatusDinamico() {
+            const status = document.getElementById('status-dinamico').value;
+            testarGet(`/message/${status}`, 'res-2');
+        }
+
+        function testarConversao() {
+            const temp = document.getElementById('temp-input').value;
+            if(!temp) return alert("Insira um número!");
+            testarGet(`/convert/celsius/${temp}`, 'res-5');
+        }
+
+        function testarBusca() {
+            const q = document.getElementById('search-input').value;
+            testarGet(`/search?q=${encodeURIComponent(q)}`, 'res-6');
+        }
+
+        function testarHeaderDashboard() {
+            const chave = document.getElementById('header-input').value;
+            fetch('/admin/dashboard', {
+                method: 'GET',
+                headers: { 'X-Api-Key': chave }
+            })
+            .then(response => processarResposta(response, 'res-9'))
+            .catch(err => document.getElementById('res-9').textContent = "Erro: " + err);
+        }
+    </script>
+    {% endblock %}
+
+</body>
+</html>
